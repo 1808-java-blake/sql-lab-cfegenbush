@@ -69,21 +69,75 @@ WHERE "FirstName" = 'Robert' AND "LastName" = 'Walter';
 -- In this section you will be using the Oracle system functions, as well as your own functions, to perform various actions against the database
 -- 3.1 System Defined Functions
 -- Task – Create a function that returns the current time.
-SELECT CURRENT_TIME;
+CREATE OR REPLACE FUNCTION get_time(ref refcursor) RETURNS refcursor AS $$
+BEGIN
+	OPEN ref FOR SELECT CURRENT_TIME;
+	RETURN ref;
+END;
+$$ LANGUAGE plpgsql;
+
+BEGIN;
+SELECT get_time('time_cur');
+FETCH ALL IN "time_cur";
 -- Task – create a function that returns the length of a mediatype from the mediatype table
-SELECT LENGTH("Name") FROM "MediaType";
+CREATE OR REPLACE FUNCTION get_length(ref refcursor) RETURNS refcursor AS $$
+BEGIN
+	OPEN ref FOR SELECT LENGTH("Name") FROM "MediaType";
+	RETURN ref;
+END;
+$$ LANGUAGE plpgsql;
+
+BEGIN;
+SELECT get_length('length_cur');
+FETCH ALL IN "length_cur";
 -- 3.2 System Defined Aggregate Functions
 -- Task – Create a function that returns the average total of all invoices
-SELECT CAST(AVG("Total") AS DECIMAL(10,2)) FROM "Invoice";
+CREATE OR REPLACE FUNCTION get_avg(ref refcursor) RETURNS refcursor AS $$
+BEGIN
+	OPEN ref FOR SELECT CAST(AVG("Total") AS DECIMAL(10,2)) FROM "Invoice";
+	RETURN ref;
+END;
+$$ LANGUAGE plpgsql;
+
+BEGIN;
+SELECT get_avg('avg_cur');
+FETCH ALL IN "avg_cur";
 -- Task – Create a function that returns the most expensive track
-SELECT MAX("UnitPrice") FROM "Track";
+CREATE OR REPLACE FUNCTION get_most_exp(ref refcursor) RETURNS refcursor AS $$
+BEGIN
+	OPEN ref FOR SELECT MAX("UnitPrice") FROM "Track";
+	RETURN ref;
+END;
+$$ LANGUAGE plpgsql;
+
+BEGIN;
+SELECT get_most_exp('exp_cur');
+FETCH ALL IN "exp_cur";
 -- 3.3 User Defined Scalar Functions
 -- Task – Create a function that returns the average price of invoiceline items in the invoiceline table
-SELECT CAST(AVG("UnitPrice") AS DECIMAL(10,2)) FROM "InvoiceLine";
+CREATE OR REPLACE FUNCTION get_avg_inv(ref refcursor) RETURNS refcursor AS $$
+BEGIN
+	OPEN ref FOR SELECT CAST(AVG("UnitPrice") AS DECIMAL(10,2)) FROM "InvoiceLine";
+	RETURN ref;
+END;
+$$ LANGUAGE plpgsql;
+
+BEGIN;
+SELECT get_avg_inv('avg_inv_cur');
+FETCH ALL IN "avg_inv_cur";
 -- 3.4 User Defined Table Valued Functions
 -- Task – Create a function that returns all employees who are born after 1968.
-SELECT * FROM "Employee"
-WHERE "BirthDate" > '1968-01-01 00:00:00';
+CREATE OR REPLACE FUNCTION get_employees_birth(ref refcursor) RETURNS refcursor AS $$
+BEGIN
+	OPEN ref FOR SELECT * FROM "Employee"
+				 WHERE "BirthDate" > '1968-01-01 00:00:00';
+	RETURN ref;
+END;
+$$ LANGUAGE plpgsql;
+
+BEGIN;
+SELECT get_employees_birth('emp_birth_cur');
+FETCH ALL IN "emp_birth_cur";
 -- 4.0 Stored Procedures
 --  In this section you will be creating and executing stored procedures. You will be creating various types of stored procedures that take input and output parameters.
 -- 4.1 Basic Stored Procedure
@@ -94,6 +148,10 @@ BEGIN
 	RETURN ref;
 END;
 $$ LANGUAGE plpgsql;
+
+BEGIN;
+SELECT show_all_names('names_cur');
+FETCH ALL IN "names_cur";
 
 BEGIN;
 SELECT show_all_names('names_cur');
