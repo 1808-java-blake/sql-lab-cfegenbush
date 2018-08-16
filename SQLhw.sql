@@ -229,8 +229,20 @@ FETCH ALL IN "customer";
 -- In this section you will create various kinds of triggers that work when certain DML statements are executed on a table.
 -- 6.1 AFTER/FOR
 -- Task - Create an after insert trigger on the employee table fired after a new record is inserted into the table.
+CREATE TRIGGER employee_log_trig
+AFTER INSERT ON "Employee"
+FOR EACH ROW
+EXECUTE PROCEDURE add_insert_trig_fun();
 -- Task – Create an after update trigger on the album table that fires after a row is inserted in the table
+CREATE TRIGGER album_log_trig
+AFTER INSERT ON "Album"
+FOR EACH ROW
+EXECUTE PROCEDURE add_album_insert_trig_fun();
 -- Task – Create an after delete trigger on the customer table that fires after a row is deleted from the table.
+CREATE TRIGGER customer_log_trig
+AFTER INSERT ON "Customer"
+FOR EACH ROW
+EXECUTE PROCEDURE add_delete_trig_fun();
 
 -- 6.2 INSTEAD OF
 -- Task – Create an instead of trigger that restricts the deletion of any invoice that is priced over 50 dollars.
