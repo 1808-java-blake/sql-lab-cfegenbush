@@ -53,18 +53,17 @@ SELECT * FROM "Employee"
 WHERE "HireDate" BETWEEN '2003-06-01' AND '2004-03-01';
 -- 2.7 DELETE
 -- Task – Delete a record in Customer table where the name is Robert Walter (There may be constraints that rely on this, find out how to resolve them).
-DELETE FROM "InvoiceLine" WHERE "InvoiceId" = 342;
-DELETE FROM "InvoiceLine" WHERE "InvoiceId" = 290;
-DELETE FROM "InvoiceLine" WHERE "InvoiceId" = 268;
-DELETE FROM "InvoiceLine" WHERE "InvoiceId" = 245;
-DELETE FROM "InvoiceLine" WHERE "InvoiceId" = 116;
-DELETE FROM "InvoiceLine" WHERE "InvoiceId" = 61;
-DELETE FROM "InvoiceLine" WHERE "InvoiceId" = 50;
-DELETE FROM "Invoice" WHERE "CustomerId" = 32;
-DELETE FROM "Customer" 
-WHERE "FirstName" = 'Robert'
-AND "LastName" = 'Walter';
--- Robert Walter updated to Aaron Mitchell in 2.4^
+DELETE FROM "InvoiceLine"
+WHERE "InvoiceId" = 
+(SELECT "InvoiceId" FROM "Invoice" WHERE "CustomerId" = 
+(SELECT "CustomerId" FROM "Customer" WHERE "FirstName" = 'Robert' AND "LastName" = 'Walter'));
+
+DELETE FROM "Invoice"
+WHERE "CustomerId" = 
+(SELECT "CustomerId" FROM "Customer" WHERE "FirstName" = 'Robert' AND "LastName" = 'Walter');
+
+DELETE FROM "Customer"
+WHERE "FirstName" = 'Robert' AND "LastName" = 'Walter';
 
 -- 3.0	SQL Functions
 -- In this section you will be using the Oracle system functions, as well as your own functions, to perform various actions against the database
@@ -181,16 +180,30 @@ FETCH ALL IN "customer";
 -- In this section you will be working with combing various tables through the use of joins. You will work with outer, inner, right, left, cross, and self joins.
 -- 7.1 INNER
 -- Task – Create an inner join that joins customers and orders and specifies the name of the customer and the invoiceId.
-
+SELECT cust."FirstName", inv."InvoiceId" FROM "Customer" AS cust, "Invoice" AS inv
+WHERE cust."CustomerId" = inv."CustomerId";
 -- 7.2 OUTER
 -- Task – Create an outer join that joins the customer and invoice table, specifying the CustomerId, firstname, lastname, invoiceId, and total.
+SELECT cust."CustomerId", cust."FirstName", cust."LastName", inv."InvoiceId", inv."Total" 
+FROM "Customer" AS cust
+FULL OUTER JOIN "Invoice" AS inv
+ON cust."CustomerId" = inv."CustomerId";
 -- 7.3 RIGHT
 -- Task – Create a right join that joins album and artist specifying artist name and title.
+SELECT art."Name", alb."Title" FROM "Artist" AS art
+RIGHT JOIN "Album" as alb
+ON art."ArtistId" = alb."ArtistId";
 -- 7.4 CROSS
 -- Task – Create a cross join that joins album and artist and sorts by artist name in ascending order.
+SELECT * 
+FROM "Album"
+CROSS JOIN "Artist"
+ORDER BY "Artist"."Name" ASC;
 -- 7.5 SELF
 -- Task – Perform a self-join on the employee table, joining on the reportsto column.
-
+SELECT * 
+FROM "Employee" AS e1
+INNER JOIN "Employee" AS e2 ON e1."EmployeeId" = e2."ReportsTo";
 
 
 
