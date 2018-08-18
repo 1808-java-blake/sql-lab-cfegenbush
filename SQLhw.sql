@@ -229,23 +229,52 @@ FETCH ALL IN "customer";
 -- In this section you will create various kinds of triggers that work when certain DML statements are executed on a table.
 -- 6.1 AFTER/FOR
 -- Task - Create an after insert trigger on the employee table fired after a new record is inserted into the table.
-CREATE TRIGGER employee_log_trig
+CREATE OR REPLACE FUNCTION add_insert_trig_fun() RETURNS trigger AS $$
+BEGIN
+	RAISE NOTICE 'EMPLOYEE INSERTED';
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER employee_trig
 AFTER INSERT ON "Employee"
 FOR EACH ROW
 EXECUTE PROCEDURE add_insert_trig_fun();
 -- Task – Create an after update trigger on the album table that fires after a row is inserted in the table
-CREATE TRIGGER album_log_trig
+CREATE OR REPLACE FUNCTION add_album_insert_trig_fun() RETURNS trigger AS $$
+BEGIN
+	RAISE NOTICE 'ALBUM INSERTED';
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER album_trig
 AFTER INSERT ON "Album"
 FOR EACH ROW
 EXECUTE PROCEDURE add_album_insert_trig_fun();
 -- Task – Create an after delete trigger on the customer table that fires after a row is deleted from the table.
-CREATE TRIGGER customer_log_trig
-AFTER INSERT ON "Customer"
+CREATE OR REPLACE FUNCTION add_delete_customer_trig_fun() RETURNS trigger AS $$
+BEGIN
+	RAISE NOTICE 'CUSTOMER DELETED';
+END;
+$$ LANGUAGE plpgsql;
+CREATE TRIGGER customer_trig
+AFTER DELETE ON "Customer"
 FOR EACH ROW
-EXECUTE PROCEDURE add_delete_trig_fun();
+EXECUTE PROCEDURE add_delete_customer_trig_fun();
 
 -- 6.2 INSTEAD OF
 -- Task – Create an instead of trigger that restricts the deletion of any invoice that is priced over 50 dollars.
+CREATE OR REPLACE FUNCTION delete_insteadof_trig_fun() RETURNS trigger AS $$
+BEGIN
+	IF "Invoice"."Total" > 50 THEN
+		RAISE NOTICE 'Invoice must be less than $50 to delete';
+		RETURN OLD;
+	END IF;
+END;
+$$ LANGUAGE plpgsql;
+CREATE TRIGGER delete_insteadof_trig
+BEFORE DELETE ON "Invoice"
+FOR EACH ROW
+EXECUTE PROCEDURE delete_insteadof_trig_fun();
 -- 7.0 JOINS
 -- In this section you will be working with combing various tables through the use of joins. You will work with outer, inner, right, left, cross, and self joins.
 -- 7.1 INNER
